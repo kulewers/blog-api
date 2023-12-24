@@ -11,10 +11,18 @@ mongoose.set("strictQuery", false);
 const mongoDb = process.env.MONGODB;
 main().catch((err) => console.log(err));
 async function main() {
-    await mongoose.connect(mongoDb);
+  await mongoose.connect(mongoDb);
 }
 
 const app = express();
+
+app.use((req, res, next) => {
+  res.set({
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  });
+  next();
+});
 
 // app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
