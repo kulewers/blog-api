@@ -36,7 +36,7 @@ router.use(postExistsValidation);
 router.get(
     "/",
     asyncHandler(async (req, res) => {
-        const comments = await Comment.find({ post: req.body.postId })
+        const comments = await Comment.find({ post: req.params.postId })
             .sort({ timestamp: -1 })
             .exec();
         res.json({ comments });
