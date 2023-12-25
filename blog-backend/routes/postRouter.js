@@ -18,7 +18,7 @@ router.get("/", async (req, res) => {
     } else {
         posts = await Post.find({}).sort({ timestamp: -1 }).exec();
     }
-    res.json({ posts });
+    res.json(posts);
 });
 
 // Get a post by ID
@@ -47,7 +47,7 @@ router.get("/:postId", [
             return;
         }
 
-        res.json({ post });
+        res.json(post);
     }),
 ]);
 
@@ -81,7 +81,7 @@ router.post("/", [
 
         await post.save();
 
-        res.json({ post });
+        res.json(post);
     }),
 ]);
 
@@ -127,7 +127,7 @@ router.patch("/:postId", [
             { new: true }
         );
 
-        res.json({ updatedPost });
+        res.json(updatedPost);
     }),
 ]);
 
@@ -155,7 +155,7 @@ router.delete("/:postId", [
         }
 
         const removedPost = await Post.findByIdAndDelete(req.params.postId);
-        res.json({ removedPost });
+        res.json(removedPost);
     }),
 ]);
 

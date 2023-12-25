@@ -39,7 +39,7 @@ router.get(
         const comments = await Comment.find({ post: req.params.postId })
             .sort({ timestamp: -1 })
             .exec();
-        res.json({ comments });
+        res.json(comments);
     })
 );
 
@@ -61,7 +61,7 @@ router.get("/:commentId", [
             return;
         }
 
-        res.json({ comment });
+        res.json(comment);
     }),
 ]);
 
@@ -86,7 +86,7 @@ router.post("/", [
 
         await comment.save();
 
-        res.json({ comment });
+        res.json(comment);
     }),
 ]);
 
@@ -105,7 +105,7 @@ router.delete("/:commentId", [
 
         const comment = await Comment.findByIdAndDelete(req.params.commentId);
 
-        res.json({ comment });
+        res.json(comment);
     }),
 ]);
 
