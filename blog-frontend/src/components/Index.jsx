@@ -1,24 +1,18 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import useFetch from "../hooks/useFetch";
 
 export default function Index() {
-    const [posts, setPosts] = useState([]);
-
-    useEffect(() => {
-        const getPosts = async () => {
-            const res = await axios.get("http://localhost:3000/posts");
-            const posts = res.data;
-            setPosts(posts);
-        };
-        getPosts();
-    }, []);
+    const [url, setUrl] = useState("http://localhost:3000/posts");
+    const [posts, loading, error] = useFetch(url);
 
     return (
-        <>
-            <ul>
-                {posts &&
-                    posts.map(function (post) {
+        <div>
+            {loading && <h3>Loading...</h3>}
+            {error && <h3>{error}</h3>}
+            {posts && (
+                <ul>
+                    {posts.map((post) => {
                         return (
                             <li key={post._id}>
                                 <Link to={`posts/${post._id}`}>
@@ -27,7 +21,8 @@ export default function Index() {
                             </li>
                         );
                     })}
-            </ul>
-        </>
+                </ul>
+            )}
+        </div>
     );
 }
