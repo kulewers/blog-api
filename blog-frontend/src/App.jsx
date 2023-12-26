@@ -1,26 +1,19 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Index from "./components/Index";
 import PostPage from "./components/PostPage";
-
-const Router = () => {
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <Index />,
-    },
-    {
-      path: "/posts/:postId",
-      element: <PostPage />,
-    },
-  ]);
-
-  return <RouterProvider router={router} />;
-};
+import Navigation from "./components/Navigation";
 
 function App() {
   return (
     <>
-      <Router />
+      <Navigation />
+      <Routes>
+        <Route index element={<Index />} />
+        <Route path="/posts">
+          <Route index element={<Navigate to="/" />}></Route>
+          <Route path=":postId" element={<PostPage />}></Route>
+        </Route>
+      </Routes>
     </>
   );
 }
