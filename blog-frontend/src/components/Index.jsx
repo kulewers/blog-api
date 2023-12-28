@@ -8,7 +8,6 @@ export default function Index() {
 
   return (
     <div>
-      {loading && <h3>Loading...</h3>}
       {error && <h3>{error}</h3>}
       {posts && (
         <ul>
