@@ -22,7 +22,7 @@ const postExistsValidation = [
     }).exec();
 
     if (!post) {
-      res.status(404).json({ errors: ["Post not found"] });
+      res.status(404).json({ errors: [{ msg: "Post not found" }] });
       return;
     }
 
@@ -38,9 +38,10 @@ router.get(
   asyncHandler(async (req, res) => {
     const comments = await Comment.find({ post: req.params.postId })
       .sort({ timestamp: -1 })
+      .select("body timestamp _id")
       .exec();
     res.json(comments);
-  }),
+  })
 );
 
 // Get comment by ID
@@ -54,10 +55,12 @@ router.get("/:commentId", [
       return;
     }
 
-    const comment = await Comment.findById(req.params.commentId).exec();
+    const comment = await Comment.findById(req.params.commentId)
+      .select("body timestamp _id")
+      .exec();
 
     if (!comment) {
-      res.status(404).json({ errors: ["Comment not found"] });
+      res.status(404).json({ errors: [{ msg: "Comment not found" }] });
       return;
     }
 
@@ -86,7 +89,11 @@ router.post("/", [
 
     await comment.save();
 
-    res.json(comment);
+    res.json({
+      _id: comment._id,
+      body: comment.body,
+      timestamp: comment.timestamp,
+    });
   }),
 ]);
 
@@ -103,7 +110,9 @@ router.delete("/:commentId", [
       return;
     }
 
-    const comment = await Comment.findByIdAndDelete(req.params.commentId);
+    const comment = await Comment.findByIdAndDelete(
+      req.params.commentId
+    ).select("body timestamp _id");
 
     res.json(comment);
   }),

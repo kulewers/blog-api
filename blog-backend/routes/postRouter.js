@@ -14,9 +14,13 @@ router.get("/", async (req, res) => {
   if (!req.user) {
     posts = await Post.find({ publishStatus: "published" })
       .sort({ timestamp: -1 })
+      .select("title body publishDate _id")
       .exec();
   } else {
-    posts = await Post.find({}).sort({ timestamp: -1 }).exec();
+    posts = await Post.find({})
+      .sort({ timestamp: -1 })
+      .select("title body publishDate _id")
+      .exec();
   }
   res.json(posts);
 });
@@ -37,9 +41,13 @@ router.get("/:postId", [
       post = await Post.findOne({
         _id: req.params.postId,
         publishStatus: "published",
-      }).exec();
+      })
+        .select("title body publishDate _id")
+        .exec();
     } else {
-      post = await Post.findById(req.params.postId).exec();
+      post = await Post.findById(req.params.postId)
+        .select("title body publishDate _id")
+        .exec();
     }
 
     if (!post) {
@@ -76,7 +84,12 @@ router.post("/", [
 
     await post.save();
 
-    res.json(post);
+    res.json({
+      _id: post._id,
+      title: post.title,
+      body: post.body,
+      publishDate: post.publishDate,
+    });
   }),
 ]);
 
@@ -97,7 +110,7 @@ router.patch("/:postId", [
     const post = await Post.findById(req.params.postId).exec();
 
     if (!post) {
-      res.status(404).json({ errors: ["Post not found"] });
+      res.status(404).json({ errors: [{ msg: "Post not found" }] });
       return;
     }
 
@@ -115,7 +128,7 @@ router.patch("/:postId", [
       req.params.postId,
       newPost,
       { new: true }
-    );
+    ).select("title body publishDate _id");
 
     res.json(updatedPost);
   }),
@@ -139,7 +152,9 @@ router.delete("/:postId", [
       return;
     }
 
-    const removedPost = await Post.findByIdAndDelete(req.params.postId);
+    const removedPost = await Post.findByIdAndDelete(req.params.postId).select(
+      "title body publishDate _id"
+    );
     res.json(removedPost);
   }),
 ]);
