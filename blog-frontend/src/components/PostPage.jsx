@@ -27,13 +27,17 @@ export default function PostPage() {
       )}
       {comments && (
         <div>
-          <h3>Comments</h3>
-          {comments.map((comment) => (
-            <div>
-              <p>{comment.body}</p>
-              <p>{new Date(comment.timestamp).toLocaleString()}</p>
-            </div>
-          ))}
+          <h3>Comments:</h3>
+          {comments.length == 0 ? (
+            <p>There are no comments on this post</p>
+          ) : (
+            comments.map((comment) => (
+              <div>
+                <p>{comment.body}</p>
+                <p>{new Date(comment.timestamp).toLocaleString()}</p>
+              </div>
+            ))
+          )}
         </div>
       )}
     </div>
