@@ -65,6 +65,7 @@ router.get("/:postId", [
 router.post("/", [
   body("title").trim().isLength({ min: 3 }).escape(),
   body("body").trim().isLength({ min: 1 }).escape(),
+  body("publish").escape(),
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
 
@@ -73,13 +74,13 @@ router.post("/", [
       return;
     }
 
-    const publishImmedeately = req.body.publish === "on";
+    const publish = req.body.publish === "on";
 
     const post = new Post({
       title: req.body.title,
       body: req.body.body,
-      publishStatus: publishImmedeately ? "published" : "draft",
-      publishDate: publishImmedeately ? new Date() : null,
+      publishStatus: publish ? "published" : "draft",
+      publishDate: publish ? new Date() : null,
     });
 
     await post.save();
@@ -115,12 +116,14 @@ router.patch("/:postId", [
     }
 
     const publish = req.body.publish === "on";
+    const updatedDate =
+      post.publishStatus === "published" ? post.publishDate : new Date();
 
     const newPost = new Post({
       title: req.body.title,
       body: req.body.body,
       publishStatus: publish ? "published" : "draft",
-      publishDate: publish ? new Date() : null,
+      publishDate: publish ? updatedDate : null,
       _id: req.params.postId,
     });
 
