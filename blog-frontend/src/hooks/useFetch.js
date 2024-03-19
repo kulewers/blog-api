@@ -22,5 +22,5 @@ export default function useFetch(url) {
     fetchData();
   }, [url]);
 
-  return [data, isPending, error];
+  return { data, isPending, error };
 }

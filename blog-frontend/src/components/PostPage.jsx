@@ -1,12 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import useFetch from "../hooks/useFetch";
 
 export default function PostPage() {
   const { postId } = useParams();
-  const [url, setUrl] = useState(`http://localhost:3000/posts/${postId}`);
-  const [post, loading, error] = useFetch(url);
-  const [comments, commentLoading, commentError] = useFetch(url + "/comments");
+  const url = `http://localhost:3000/posts/${postId}`;
+  const { data: post, error } = useFetch(url);
+  const { data: comments } = useFetch(url + "/comments");
 
   const navigate = useNavigate();
 
@@ -32,7 +32,7 @@ export default function PostPage() {
             <p>There are no comments on this post</p>
           ) : (
             comments.map((comment) => (
-              <div>
+              <div key={comment._id}>
                 <p>{comment.body}</p>
                 <p>{new Date(comment.timestamp).toLocaleString()}</p>
               </div>

@@ -1,10 +1,10 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import useFetch from "../hooks/useFetch";
+import useFetch from "../../hooks/useFetch";
+
+const url = "http://localhost:3000/posts";
 
 export default function Index() {
-  const [url, setUrl] = useState("http://localhost:3000/posts");
-  const [posts, loading, error] = useFetch(url);
+  const { data: posts, error } = useFetch(url);
 
   return (
     <div>
