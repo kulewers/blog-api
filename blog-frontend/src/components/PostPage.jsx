@@ -1,5 +1,5 @@
-import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 
 export default function PostPage() {

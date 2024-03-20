@@ -1,36 +1,27 @@
-import { useForm } from "react-hook-form";
+import { useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+import { LoginContext } from "../../context/LoginContext";
 
 export default function AuthorIndex() {
-  const { register, handleSubmit } = useForm();
+  const navigate = useNavigate();
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
-  const onSubmit = async (data) => {
-    const response = await fetch("http://localhost:3000/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      console.error(response);
-      throw new Error("Authorization failure");
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate("/author/login");
     }
+  }, [isLoggedIn]);
 
-    const token = await response.json();
+  const logOutHandler = () => {
+    Cookies.remove("Authentication");
+    setIsLoggedIn(false);
   };
 
   return (
-    <div>
-      <h1>Please log in to view the site</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <label htmlFor="username">Username</label>
-        <input type="text" id="username" {...register("username")} />
-        <br />
-        <label htmlFor="password">Password</label>
-        <input type="password" id="password" {...register("password")} />
-        <button type="submit">Log in</button>
-      </form>
-    </div>
+    <>
+      <h1>Hello, Admin</h1>
+      <button onClick={logOutHandler}>Log out</button>
+    </>
   );
 }
