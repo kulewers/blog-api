@@ -12,7 +12,7 @@ export default function PostPage() {
 
   useEffect(() => {
     if (error) {
-      navigate("/not-found", { replace: true });
+      navigate("/view/not-found", { replace: true });
     }
   }, [error]);
 

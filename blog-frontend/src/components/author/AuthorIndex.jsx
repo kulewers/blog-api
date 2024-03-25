@@ -1,11 +1,10 @@
 import { useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
+import { useNavigate, Link } from "react-router-dom";
 import { LoginContext } from "../../context/LoginContext";
 
 export default function AuthorIndex() {
   const navigate = useNavigate();
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+  const { isLoggedIn } = useContext(LoginContext);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -13,15 +12,10 @@ export default function AuthorIndex() {
     }
   }, [isLoggedIn]);
 
-  const logOutHandler = () => {
-    Cookies.remove("Authentication");
-    setIsLoggedIn(false);
-  };
-
   return (
-    <>
-      <h1>Hello, Admin</h1>
-      <button onClick={logOutHandler}>Log out</button>
-    </>
+    <div>
+      <h1>Hello, Author</h1>
+      <Link to={`/author/posts`}>View Posts</Link>
+    </div>
   );
 }
