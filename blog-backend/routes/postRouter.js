@@ -2,28 +2,39 @@ const express = require("express");
 const router = express.Router();
 const { param, body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
+
 const commentRouter = require("./commentRouter");
+router.use("/:postId/comments", commentRouter);
+
+const passport = require("passport");
+const jwtStrategy = require("../strategies/jwt");
+passport.use(jwtStrategy);
 
 const Post = require("../models/post");
 
-router.use("/:postId/comments", commentRouter);
-
 // Get all posts
-router.get("/", async (req, res) => {
-  let posts;
-  if (!req.user) {
-    posts = await Post.find({ publishStatus: "published" })
+router.get("/", [
+  async (req, res) => {
+    const posts = await Post.find({ publishStatus: "published" })
       .sort({ timestamp: -1 })
       .select("title body publishDate _id")
       .exec();
-  } else {
-    posts = await Post.find({})
+    res.json(posts);
+  },
+]);
+
+// Get all posts, including drafts
+router.get("/protected", [
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const posts = await Post.find({})
       .sort({ timestamp: -1 })
-      .select("title body publishDate _id")
+      .select("title body publishDate publishStatus _id")
       .exec();
-  }
-  res.json(posts);
-});
+
+    res.json(posts);
+  },
+]);
 
 // Get a post by ID
 router.get("/:postId", [
@@ -63,6 +74,7 @@ router.get("/:postId", [
 
 // Create a post
 router.post("/", [
+  passport.authenticate("jwt", { session: false }),
   body("title").trim().isLength({ min: 3 }).escape(),
   body("body").trim().isLength({ min: 1 }).escape(),
   body("publish").escape(),
@@ -96,6 +108,7 @@ router.post("/", [
 
 // Update a post
 router.patch("/:postId", [
+  passport.authenticate("jwt", { session: false }),
   body("title").trim().isLength({ min: 3 }).escape(),
   body("body").trim().isLength({ min: 1 }).escape(),
   body("publish").escape(),
@@ -139,6 +152,7 @@ router.patch("/:postId", [
 
 // Delete a post
 router.delete("/:postId", [
+  passport.authenticate("jwt", { session: false }),
   param("postId", "Must provide valid id").isMongoId(),
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);

@@ -10,11 +10,15 @@ module.exports = new JwtStrategy(
   },
   async (jwtPayload, done) => {
     const { username } = jwtPayload;
-    const user = await User.findOne({ username });
-    if (user) {
-      done(null, user);
-    } else {
-      done(null, false);
+    try {
+      const user = await User.findOne({ username });
+      if (user) {
+        done(null, user);
+      } else {
+        done(null, false);
+      }
+    } catch (err) {
+      done(err, false);
     }
   }
 );

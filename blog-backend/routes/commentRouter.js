@@ -3,6 +3,10 @@ const router = express.Router({ mergeParams: true });
 const { param, body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
 
+const passport = require("passport");
+const jwtStrategy = require("../strategies/jwt");
+passport.use(jwtStrategy);
+
 const Post = require("../models/post");
 const Comment = require("../models/comment");
 
@@ -101,6 +105,7 @@ router.post("/", [
 
 // Delete a comment
 router.delete("/:commentId", [
+  passport.authenticate("jwt", { session: false }),
   param("commentId", "Must provide valid id").isMongoId(),
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
