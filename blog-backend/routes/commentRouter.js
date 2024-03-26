@@ -10,7 +10,18 @@ passport.use(jwtStrategy);
 const Post = require("../models/post");
 const Comment = require("../models/comment");
 
-const postExistsValidation = [
+const authenticateIfHeaderProvided = (req, res, next) => {
+  const token = req.headers["authorization"];
+
+  if (token) {
+    passport.authenticate("jwt", { session: false })(req, res, next);
+  } else {
+    next();
+  }
+};
+
+const validatePost = [
+  authenticateIfHeaderProvided,
   param("postId", "Must provide valid id").isMongoId(),
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
@@ -20,10 +31,15 @@ const postExistsValidation = [
       return;
     }
 
-    const post = await Post.findOne({
-      _id: req.params.postId,
-      publishStatus: "published",
-    }).exec();
+    let post;
+    if (req.isAuthenticated()) {
+      post = await Post.findById(req.params.postId).exec();
+    } else {
+      post = await Post.findOne({
+        _id: req.params.postId,
+        publishStatus: "published",
+      }).exec();
+    }
 
     if (!post) {
       res.status(404).json({ errors: [{ msg: "Post not found" }] });
@@ -34,7 +50,7 @@ const postExistsValidation = [
   }),
 ];
 
-router.use(postExistsValidation);
+router.use(validatePost);
 
 // Get commments
 router.get(

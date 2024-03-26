@@ -12,32 +12,39 @@ passport.use(jwtStrategy);
 
 const Post = require("../models/post");
 
+const authenticateIfHeaderProvided = (req, res, next) => {
+  const token = req.headers["authorization"];
+
+  if (token) {
+    passport.authenticate("jwt", { session: false })(req, res, next);
+  } else {
+    next();
+  }
+};
+
 // Get all posts
 router.get("/", [
-  async (req, res) => {
-    const posts = await Post.find({ publishStatus: "published" })
-      .sort({ timestamp: -1 })
-      .select("title body publishDate _id")
-      .exec();
+  authenticateIfHeaderProvided,
+  asyncHandler(async (req, res, next) => {
+    let posts;
+    if (req.isAuthenticated()) {
+      posts = await Post.find({})
+        .sort({ timestamp: -1 })
+        .select("title body publishDate publishStatus _id")
+        .exec();
+    } else {
+      posts = await Post.find({ publishStatus: "published" })
+        .sort({ timestamp: -1 })
+        .select("title body publishDate _id")
+        .exec();
+    }
     res.json(posts);
-  },
-]);
-
-// Get all posts, including drafts
-router.get("/protected", [
-  passport.authenticate("jwt", { session: false }),
-  async (req, res) => {
-    const posts = await Post.find({})
-      .sort({ timestamp: -1 })
-      .select("title body publishDate publishStatus _id")
-      .exec();
-
-    res.json(posts);
-  },
+  }),
 ]);
 
 // Get a post by ID
 router.get("/:postId", [
+  // authenticateIfHeaderProvided,
   param("postId", "Must provide valid id").isMongoId(),
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
@@ -48,15 +55,15 @@ router.get("/:postId", [
     }
 
     let post;
-    if (!req.user) {
+    if (req.isAuthenticated()) {
+      post = await Post.findById(req.params.postId)
+        .select("title body publishDate publishStatus _id")
+        .exec();
+    } else {
       post = await Post.findOne({
         _id: req.params.postId,
         publishStatus: "published",
       })
-        .select("title body publishDate _id")
-        .exec();
-    } else {
-      post = await Post.findById(req.params.postId)
         .select("title body publishDate _id")
         .exec();
     }
@@ -144,7 +151,7 @@ router.patch("/:postId", [
       req.params.postId,
       newPost,
       { new: true }
-    ).select("title body publishDate _id");
+    ).select("title body publishDate publishStatus _id");
 
     res.json(updatedPost);
   }),
@@ -170,7 +177,7 @@ router.delete("/:postId", [
     }
 
     const removedPost = await Post.findByIdAndDelete(req.params.postId).select(
-      "title body publishDate _id"
+      "title body publishDate publishStatus _id"
     );
     res.json(removedPost);
   }),

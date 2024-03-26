@@ -33,6 +33,7 @@ app.use((req, res, next) => {
   });
   next();
 });
+app.use(passport.initialize());
 
 const loginRouter = require("./routes/loginRouter");
 const postRouter = require("./routes/postRouter");
