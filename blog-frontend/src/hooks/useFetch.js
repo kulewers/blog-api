@@ -1,10 +1,7 @@
-import { useEffect, useState, useContext } from "react";
-import { LoginContext } from "../context/LoginContext";
+import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 
 export default function useFetch(url) {
-  const { isLoggedIn } = useContext(LoginContext);
-
   const [data, setData] = useState(null);
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState(null);
@@ -13,8 +10,8 @@ export default function useFetch(url) {
       setIsPending(true);
       try {
         let headers;
-        if (isLoggedIn) {
-          const token = Cookies.get("Authorization");
+        const token = Cookies.get("Authorization");
+        if (token) {
           headers = {
             Authorization: token,
           };

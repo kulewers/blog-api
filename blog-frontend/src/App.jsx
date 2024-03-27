@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { LoginContext } from "./context/LoginContext";
 import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 
@@ -10,24 +10,18 @@ import AuthorNavigation from "./components/author/AuthorNavigation";
 import Login from "./components/author/Login";
 import Posts from "./components/author/Posts";
 
-import PostPage from "./components/PostPage";
-import NotFound from "./components/NotFound";
-
-import Cookies from "js-cookie";
+import { default as AuthorPostPage } from "./components/author/PostPage";
+import { default as ViewPostPage } from "./components/view/PostPage";
+import { default as AuthorNotFound } from "./components/author/NotFound";
+import { default as ViewNotFound } from "./components/view/NotFound";
+import ProtectedRoute from "./components/author/ProtectedRoute";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const token = Cookies.get("Authorization");
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
+  const [userToken, setUserToken] = useState(null);
 
   return (
     <>
-      <LoginContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+      <LoginContext.Provider value={{ userToken, setUserToken }}>
         <BrowserRouter>
           <Routes>
             <Route path="/*" element={<Navigate replace to="/view" />} />
@@ -35,16 +29,19 @@ function App() {
               <Route index element={<ViewIndex />} />
               <Route path="posts">
                 <Route index element={<Navigate replace to="/view" />} />
-                <Route path=":postId" element={<PostPage />} />
+                <Route path=":postId" element={<ViewPostPage />} />
               </Route>
-              <Route path="not-found" element={<NotFound />} />
+              <Route path="not-found" element={<ViewNotFound />} />
             </Route>
             <Route path="/author" element={<AuthorNavigation />}>
-              <Route index element={<AuthorIndex />} />
-              <Route path="posts">
-                <Route index element={<Posts />} />
-                <Route path=":postId" element={<PostPage />} />
+              <Route element={<ProtectedRoute />}>
+                <Route index element={<AuthorIndex />} />
+                <Route path="posts">
+                  <Route index element={<Posts />} />
+                  <Route path=":postId" element={<AuthorPostPage />} />
+                </Route>
               </Route>
+              <Route path="not-found" element={<AuthorNotFound />} />
               <Route path="login" element={<Login />} />
             </Route>
           </Routes>

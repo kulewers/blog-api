@@ -44,7 +44,7 @@ router.get("/", [
 
 // Get a post by ID
 router.get("/:postId", [
-  // authenticateIfHeaderProvided,
+  authenticateIfHeaderProvided,
   param("postId", "Must provide valid id").isMongoId(),
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);

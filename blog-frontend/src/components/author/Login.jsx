@@ -10,13 +10,13 @@ export default function Login() {
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
 
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+  const { userToken, setUserToken } = useContext(LoginContext);
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (userToken) {
       navigate("/author");
     }
-  }, [isLoggedIn]);
+  }, [userToken]);
 
   const onSubmit = async (data) => {
     const response = await fetch("http://localhost:3000/login", {
@@ -39,7 +39,7 @@ export default function Login() {
 
     const { token } = await response.json();
     Cookies.set("Authorization", `Bearer ${token}`, { secure: true });
-    setIsLoggedIn(true);
+    setUserToken(token);
     navigate("/author");
   };
 

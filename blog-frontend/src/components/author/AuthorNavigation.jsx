@@ -4,11 +4,11 @@ import Cookies from "js-cookie";
 import { LoginContext } from "../../context/LoginContext";
 
 export default function AuthorNavigation() {
-  const { setIsLoggedIn } = useContext(LoginContext);
+  const { setUserToken } = useContext(LoginContext);
 
   const logOutHandler = () => {
     Cookies.remove("Authorization");
-    setIsLoggedIn(false);
+    setUserToken(null);
   };
 
   return (
