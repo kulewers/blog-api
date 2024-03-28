@@ -53,19 +53,28 @@ const validatePost = [
 router.use(validatePost);
 
 // Get commments
-router.get(
-  "/",
+router.get("/", [
+  authenticateIfHeaderProvided,
   asyncHandler(async (req, res) => {
-    const comments = await Comment.find({ post: req.params.postId })
-      .sort({ timestamp: -1 })
-      .select("body timestamp _id")
-      .exec();
+    let comments;
+    if (req.isAuthenticated()) {
+      comments = await Comment.find({ post: req.params.postId })
+        .sort({ timestamp: -1 })
+        .select("body creatorEmail timestamp _id")
+        .exec();
+    } else {
+      comments = await Comment.find({ post: req.params.postId })
+        .sort({ timestamp: -1 })
+        .select("body timestamp _id")
+        .exec();
+    }
     res.json(comments);
-  })
-);
+  }),
+]);
 
 // Get comment by ID
 router.get("/:commentId", [
+  authenticateIfHeaderProvided,
   param("commentId", "Must provide valid id").isMongoId(),
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
@@ -74,10 +83,16 @@ router.get("/:commentId", [
       res.status(400).json(errors);
       return;
     }
-
-    const comment = await Comment.findById(req.params.commentId)
-      .select("body timestamp _id")
-      .exec();
+    let comment;
+    if (req.isAuthenticated()) {
+      comment = await Comment.findById(req.params.commentId)
+        .select("body creatorEmail timestamp _id")
+        .exec();
+    } else {
+      comment = await Comment.findById(req.params.commentId)
+        .select("body timestamp _id")
+        .exec();
+    }
 
     if (!comment) {
       res.status(404).json({ errors: [{ msg: "Comment not found" }] });

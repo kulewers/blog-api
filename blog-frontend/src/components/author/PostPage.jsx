@@ -6,7 +6,7 @@ export default function PostPage() {
   const { postId } = useParams();
   const url = `http://localhost:3000/posts/${postId}`;
   const { data: post, error } = useFetch(url, { authorize: true });
-  const { data: comments } = useFetch(url + "/comments");
+  const { data: comments } = useFetch(url + "/comments", { authorize: true });
 
   const navigate = useNavigate();
 
@@ -35,8 +35,16 @@ export default function PostPage() {
             <p>There are no comments on this post</p>
           ) : (
             comments.map((comment) => (
-              <div key={comment._id}>
+              <div
+                key={comment._id}
+                style={{
+                  border: "1px solid #aaa",
+                  padding: "12px",
+                  marginTop: "8px",
+                }}
+              >
                 <p>{comment.body}</p>
+                <p>{"By: " + comment.creatorEmail}</p>
                 <p>{new Date(comment.timestamp).toLocaleString()}</p>
               </div>
             ))
