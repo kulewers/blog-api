@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
+import CommentSection from "./CommentSection";
 
 export default function PostPage() {
   const { postId } = useParams();
@@ -28,29 +29,7 @@ export default function PostPage() {
           </p>
         </div>
       )}
-      {comments && (
-        <div>
-          <h3>Comments:</h3>
-          {comments.length == 0 ? (
-            <p>There are no comments on this post</p>
-          ) : (
-            comments.map((comment) => (
-              <div
-                key={comment._id}
-                style={{
-                  border: "1px solid #aaa",
-                  padding: "12px",
-                  marginTop: "8px",
-                }}
-              >
-                <p>{comment.body}</p>
-                <p>{"By: " + comment.creatorEmail}</p>
-                <p>{new Date(comment.timestamp).toLocaleString()}</p>
-              </div>
-            ))
-          )}
-        </div>
-      )}
+      <CommentSection comments={comments} />
     </div>
   );
 }

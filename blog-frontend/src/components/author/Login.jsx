@@ -60,11 +60,11 @@ export default function Login() {
         </form>
       </div>
       <div>
-        {errorMessages
-          ? errorMessages.map((error) => (
-              <p style={{ color: "red" }}>{error}</p>
-            ))
-          : null}
+        {errorMessages?.map((error, index) => (
+          <p style={{ color: "red" }} key={index}>
+            {error}
+          </p>
+        ))}
       </div>
     </>
   );
