@@ -4,7 +4,7 @@ import useFetch from "../../hooks/useFetch";
 const url = "http://localhost:3000/posts";
 
 export default function Posts() {
-  const { data: posts, error } = useFetch(url);
+  const { data: posts, error } = useFetch(url, { authorize: true });
 
   return (
     <div>

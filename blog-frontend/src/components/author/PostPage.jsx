@@ -5,7 +5,7 @@ import useFetch from "../../hooks/useFetch";
 export default function PostPage() {
   const { postId } = useParams();
   const url = `http://localhost:3000/posts/${postId}`;
-  const { data: post, error } = useFetch(url);
+  const { data: post, error } = useFetch(url, { authorize: true });
   const { data: comments } = useFetch(url + "/comments");
 
   const navigate = useNavigate();
