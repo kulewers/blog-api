@@ -60,12 +60,12 @@ router.get("/", [
     if (req.isAuthenticated()) {
       comments = await Comment.find({ post: req.params.postId })
         .sort({ timestamp: -1 })
-        .select("body creatorEmail timestamp _id")
+        .select("body creatorEmail timestamp _id post")
         .exec();
     } else {
       comments = await Comment.find({ post: req.params.postId })
         .sort({ timestamp: -1 })
-        .select("body timestamp _id")
+        .select("body timestamp _id post")
         .exec();
     }
     res.json(comments);
@@ -86,11 +86,11 @@ router.get("/:commentId", [
     let comment;
     if (req.isAuthenticated()) {
       comment = await Comment.findById(req.params.commentId)
-        .select("body creatorEmail timestamp _id")
+        .select("body creatorEmail timestamp _id post")
         .exec();
     } else {
       comment = await Comment.findById(req.params.commentId)
-        .select("body timestamp _id")
+        .select("body timestamp _id post")
         .exec();
     }
 

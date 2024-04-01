@@ -6,16 +6,16 @@ import CommentSection from "./CommentSection";
 export default function PostPage() {
   const { postId } = useParams();
   const url = `http://localhost:3000/posts/${postId}`;
-  const { data: post, error } = useFetch(url, { authorize: true });
+  const { data: post, postFetchError } = useFetch(url, { authorize: true });
   const { data: comments } = useFetch(url + "/comments", { authorize: true });
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (error) {
+    if (postFetchError) {
       navigate("/author/not-found", { replace: true });
     }
-  }, [error]);
+  }, [postFetchError]);
 
   return (
     <div>
