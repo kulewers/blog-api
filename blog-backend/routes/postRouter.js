@@ -93,13 +93,11 @@ router.post("/", [
       return;
     }
 
-    const publish = req.body.publish === "on";
-
     const post = new Post({
       title: req.body.title,
       body: req.body.body,
-      publishStatus: publish ? "published" : "draft",
-      publishDate: publish ? new Date() : null,
+      publishStatus: req.body.publish ? "published" : "draft",
+      publishDate: req.body.publish ? new Date() : null,
     });
 
     await post.save();
@@ -135,15 +133,16 @@ router.patch("/:postId", [
       return;
     }
 
-    const publish = req.body.publish === "on";
+    req.body.publish = req.body.publish === "true";
+
     const updatedDate =
-      post.publishStatus === "published" ? post.publishDate : new Date();
+      post.publishStatus === "draft" ? new Date() : post.publishDate;
 
     const newPost = new Post({
       title: req.body.title,
       body: req.body.body,
-      publishStatus: publish ? "published" : "draft",
-      publishDate: publish ? updatedDate : null,
+      publishStatus: req.body.publish ? "published" : "draft",
+      publishDate: req.body.publish ? updatedDate : null,
       _id: req.params.postId,
     });
 

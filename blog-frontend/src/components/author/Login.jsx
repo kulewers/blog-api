@@ -51,9 +51,9 @@ export default function Login() {
           onSubmit={handleSubmit(onSubmit)}
           style={{ display: "flex", flexDirection: "column", width: "180px" }}
         >
-          <label htmlFor="username">Username </label>
+          <label htmlFor="username">Username:</label>
           <input type="text" id="username" {...register("username")} />
-          <label htmlFor="password">Password </label>
+          <label htmlFor="password">Password:</label>
           <input type="password" id="password" {...register("password")} />
           <br />
           <button type="submit">Log in</button>
