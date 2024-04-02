@@ -7,10 +7,10 @@ import { LoginContext } from "../../context/LoginContext";
 export default function Login() {
   const [errorMessages, setErrorMessages] = useState([]);
 
+  const { userToken, setUserToken } = useContext(LoginContext);
+
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
-
-  const { userToken, setUserToken } = useContext(LoginContext);
 
   useEffect(() => {
     if (userToken) {

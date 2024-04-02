@@ -2,26 +2,13 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginContext } from "../../context/LoginContext";
 
-function ConfirmDeletionModal({ show, setShow, onDelete }) {
-  return (
-    <div style={{ display: show ? "block" : "none" }}>
-      <p style={{ color: "red" }}>Are you sure you want to delete?</p>
-      <button onClick={onDelete}>Confirm</button>
-      <button onClick={() => setShow(false)} style={{ marginLeft: "4px" }}>
-        Cancel
-      </button>
-    </div>
-  );
-}
-
 export default function Comment({ data }) {
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const navigate = useNavigate();
+  const [showingDeletionConfirmation, setShowingDeletionConfirmation] =
+    useState(false);
+
   const { userToken } = useContext(LoginContext);
 
-  const openModal = () => {
-    setShowConfirmationModal(true);
-  };
+  const navigate = useNavigate();
 
   const handleDelete = async () => {
     const response = await fetch(
@@ -29,7 +16,6 @@ export default function Comment({ data }) {
       {
         method: "DELETE",
         headers: {
-          "Content-Type": "application/json",
           Authorization: userToken,
         },
       }
@@ -55,12 +41,32 @@ export default function Comment({ data }) {
       <p>{data.body}</p>
       <p>{"By: " + data.creatorEmail}</p>
       <p>{new Date(data.timestamp).toLocaleString()}</p>
-      <button onClick={openModal}>Delete</button>
+      <button
+        onClick={() => {
+          setShowingDeletionConfirmation(true);
+        }}
+      >
+        Delete
+      </button>
       <ConfirmDeletionModal
-        show={showConfirmationModal}
-        setShow={setShowConfirmationModal}
+        show={showingDeletionConfirmation}
+        onCancel={() => setShowingDeletionConfirmation(false)}
         onDelete={handleDelete}
       />
+    </div>
+  );
+}
+
+function ConfirmDeletionModal({ show, onCancel, onDelete }) {
+  return (
+    <div style={{ display: show ? "block" : "none" }}>
+      <p style={{ color: "red" }}>
+        Are you sure you want to delete this comment?
+      </p>
+      <button onClick={onDelete}>Confirm</button>
+      <button onClick={onCancel} style={{ marginLeft: "4px" }}>
+        Cancel
+      </button>
     </div>
   );
 }

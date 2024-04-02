@@ -1,17 +1,20 @@
 import { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import useFetch from "../../hooks/useFetch";
 import CommentSection from "./CommentSection";
+import useFetch from "../../hooks/useFetch";
 import { LoginContext } from "../../context/LoginContext";
 
 export default function PostPage() {
+  const [isEditing, setIsEditing] = useState(false);
+  const [showingDeletionConfirmation, setShowingDeletionConfirmation] =
+    useState(false);
+
+  const { userToken } = useContext(LoginContext);
   const { postId } = useParams();
   const url = `http://localhost:3000/posts/${postId}`;
   const { data: post, postFetchError } = useFetch(url, { authorize: true });
   const { data: comments } = useFetch(url + "/comments", { authorize: true });
-
-  const [isEditing, setIsEditing] = useState(false);
 
   const navigate = useNavigate();
 
@@ -21,13 +24,30 @@ export default function PostPage() {
     }
   }, [postFetchError]);
 
-  const onCancel = () => setIsEditing(false);
+  const handleDelete = async () => {
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        Authorization: userToken,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Post deletion failure");
+    }
+
+    navigate("/author/posts");
+  };
 
   return (
     <div>
       {post &&
         (isEditing ? (
-          <PostEditForm defaults={post} onCancel={onCancel} url={url} />
+          <PostEditForm
+            defaults={post}
+            onCancel={() => setIsEditing(false)}
+            url={url}
+          />
         ) : (
           <div>
             <h1>{post.title}</h1>
@@ -37,6 +57,17 @@ export default function PostPage() {
                 "Published: " + new Date(post.publishDate).toLocaleDateString()}
             </p>
             <button onClick={() => setIsEditing(true)}>Edit</button>
+            <button
+              onClick={() => setShowingDeletionConfirmation(true)}
+              style={{ marginLeft: "4px" }}
+            >
+              Delete
+            </button>
+            <ConfirmDeletionModal
+              show={showingDeletionConfirmation}
+              onCancel={() => setShowingDeletionConfirmation(false)}
+              onDelete={handleDelete}
+            />
           </div>
         ))}
       <CommentSection comments={comments} />
@@ -98,10 +129,22 @@ function PostEditForm({ defaults, onCancel, url }) {
         />
         <br />
         <button type="submit">Submit</button>
-        <button onClick={onCancel} type="button">
+        <button onClick={onCancel} type="button" style={{ marginLeft: "4px" }}>
           Cancel
         </button>
       </form>
+    </div>
+  );
+}
+
+function ConfirmDeletionModal({ show, onCancel, onDelete }) {
+  return (
+    <div style={{ display: show ? "block" : "none" }}>
+      <p style={{ color: "red" }}>Are you sure you want to delete this post?</p>
+      <button onClick={onDelete}>Confirm</button>
+      <button onClick={onCancel} style={{ marginLeft: "4px" }}>
+        Cancel
+      </button>
     </div>
   );
 }
