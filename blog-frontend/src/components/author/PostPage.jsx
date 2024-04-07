@@ -44,7 +44,7 @@ export default function PostPage() {
       {post &&
         (isEditing ? (
           <PostEditForm
-            defaults={post}
+            data={post}
             onCancel={() => setIsEditing(false)}
             url={url}
           />
@@ -85,7 +85,7 @@ export default function PostPage() {
   );
 }
 
-function PostEditForm({ defaults, onCancel, url }) {
+function PostEditForm({ data, onCancel, url }) {
   const { userToken } = useContext(LoginContext);
 
   const { register, handleSubmit } = useForm();
@@ -110,13 +110,14 @@ function PostEditForm({ defaults, onCancel, url }) {
 
   return (
     <div>
+      <h1>Editing post: {data.title}</h1>
       <form onSubmit={handleSubmit(submitEdit)}>
         <label htmlFor="title">Title: </label>
         <br />
         <input
           type="text"
           id="title"
-          defaultValue={defaults.title}
+          defaultValue={data.title}
           {...register("title")}
         />
         <br />
@@ -124,19 +125,21 @@ function PostEditForm({ defaults, onCancel, url }) {
         <br />
         <textarea
           id="body"
-          defaultValue={defaults.body}
+          defaultValue={data.body}
           cols={50}
           rows={10}
           {...register("body")}
         />
         <br />
-        <label htmlFor="publish">Publish: </label>
-        <input
-          type="checkbox"
-          id="publish"
-          defaultChecked={defaults.publishStatus === "published" ? true : false}
-          {...register("publish")}
-        />
+        <label htmlFor="publish">
+          <input
+            type="checkbox"
+            id="publish"
+            defaultChecked={data.publishStatus === "published" ? true : false}
+            {...register("publish")}
+          />
+          Publish
+        </label>
         <br />
         <button type="submit">Submit</button>
         <button onClick={onCancel} type="button" style={{ marginLeft: "4px" }}>

@@ -93,6 +93,8 @@ router.post("/", [
       return;
     }
 
+    req.body.publish = req.body.publish === "true";
+
     const post = new Post({
       title: req.body.title,
       body: req.body.body,

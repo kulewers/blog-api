@@ -8,17 +8,21 @@ export default function Index() {
 
   return (
     <div>
+      <h1>Welcome to my blog!</h1>
       {error && <h3>{error}</h3>}
       {posts && (
-        <ul>
-          {posts.map((post) => {
-            return (
-              <li key={post._id}>
-                <Link to={`posts/${post._id}`}>{post.title}</Link>
-              </li>
-            );
-          })}
-        </ul>
+        <div>
+          <h3>Current posts:</h3>
+          <ul>
+            {posts.map((post) => {
+              return (
+                <li key={post._id}>
+                  <Link to={`posts/${post._id}`}>{post.title}</Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       )}
     </div>
   );

@@ -15,6 +15,7 @@ import { default as ViewPostPage } from "./components/view/PostPage";
 import { default as AuthorNotFound } from "./components/author/NotFound";
 import { default as ViewNotFound } from "./components/view/NotFound";
 import ProtectedRoute from "./components/author/ProtectedRoute";
+import Create from "./components/author/Create";
 
 function App() {
   const [userToken, setUserToken] = useState(null);
@@ -40,6 +41,7 @@ function App() {
                   <Route index element={<Posts />} />
                   <Route path=":postId" element={<AuthorPostPage />} />
                 </Route>
+                <Route path="create" element={<Create />} />
               </Route>
               <Route path="not-found" element={<AuthorNotFound />} />
               <Route path="login" element={<Login />} />
