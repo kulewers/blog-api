@@ -23,7 +23,16 @@ export default function PostPage() {
         <div>
           <h1>{post.title}</h1>
           <p>{post.body}</p>
-          <p>{new Date(post.publishDate).toLocaleDateString()}</p>
+          <p
+            style={{
+              border: "1px solid #aaa",
+              display: "inline-block",
+              padding: "6px",
+              backgroundColor: "#eee",
+            }}
+          >
+            {"Published: " + new Date(post.publishDate).toLocaleDateString()}
+          </p>
         </div>
       )}
       <CommentSection comments={comments} />

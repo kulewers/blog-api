@@ -35,7 +35,8 @@ export default function Comment({ data }) {
       style={{
         border: "1px solid #aaa",
         padding: "12px",
-        marginTop: "8px",
+        maxWidth: "500px",
+        backgroundColor: "#eee",
       }}
     >
       <p>{data.body}</p>

@@ -52,10 +52,20 @@ export default function PostPage() {
           <div>
             <h1>{post.title}</h1>
             <p>{post.body}</p>
-            <p>
-              {post.publishDate &&
-                "Published: " + new Date(post.publishDate).toLocaleDateString()}
+            <p
+              style={{
+                border: "1px solid #aaa",
+                display: "inline-block",
+                padding: "6px",
+                backgroundColor: "#eee",
+              }}
+            >
+              {post.publishStatus === "published"
+                ? "Published: " +
+                  new Date(post.publishDate).toLocaleDateString()
+                : "Post still in drafts"}
             </p>
+            <br />
             <button onClick={() => setIsEditing(true)}>Edit</button>
             <button
               onClick={() => setShowingDeletionConfirmation(true)}
