@@ -7,8 +7,7 @@ import { LoginContext } from "../../context/LoginContext";
 
 export default function PostPage() {
   const [isEditing, setIsEditing] = useState(false);
-  const [showingDeletionConfirmation, setShowingDeletionConfirmation] =
-    useState(false);
+  const [currentModal, setCurrentModal] = useState(null);
 
   const { userToken } = useContext(LoginContext);
   const { postId } = useParams();
@@ -37,6 +36,28 @@ export default function PostPage() {
     }
 
     navigate("/author/posts");
+  };
+
+  const handleChangeStatus = async () => {
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+
+        Authorization: userToken,
+      },
+      body: JSON.stringify({
+        title: post.title,
+        body: post.body,
+        publish: post.publishStatus === "published" ? "false" : "true",
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Post edit failure");
+    }
+
+    navigate(0);
   };
 
   return (
@@ -68,14 +89,25 @@ export default function PostPage() {
             <br />
             <button onClick={() => setIsEditing(true)}>Edit</button>
             <button
-              onClick={() => setShowingDeletionConfirmation(true)}
+              onClick={() => setCurrentModal("changePublishStatus")}
+              style={{ marginLeft: "4px" }}
+            >
+              {post.publishStatus === "published" ? "Unpublish" : "Publish"}
+            </button>
+            <button
+              onClick={() => setCurrentModal("delete")}
               style={{ marginLeft: "4px" }}
             >
               Delete
             </button>
+            <ConfirmChangePublishStatusModal
+              show={currentModal === "changePublishStatus"}
+              onCancel={() => setCurrentModal(null)}
+              onConfirm={handleChangeStatus}
+            />
             <ConfirmDeletionModal
-              show={showingDeletionConfirmation}
-              onCancel={() => setShowingDeletionConfirmation(false)}
+              show={currentModal === "delete"}
+              onCancel={() => setCurrentModal(null)}
               onDelete={handleDelete}
             />
           </div>
@@ -155,6 +187,20 @@ function ConfirmDeletionModal({ show, onCancel, onDelete }) {
     <div style={{ display: show ? "block" : "none" }}>
       <p style={{ color: "red" }}>Are you sure you want to delete this post?</p>
       <button onClick={onDelete}>Confirm</button>
+      <button onClick={onCancel} style={{ marginLeft: "4px" }}>
+        Cancel
+      </button>
+    </div>
+  );
+}
+
+function ConfirmChangePublishStatusModal({ show, onCancel, onConfirm }) {
+  return (
+    <div style={{ display: show ? "block" : "none" }}>
+      <p style={{ color: "red" }}>
+        Are you sure you want to change this post's publish status?
+      </p>
+      <button onClick={onConfirm}>Confirm</button>
       <button onClick={onCancel} style={{ marginLeft: "4px" }}>
         Cancel
       </button>
